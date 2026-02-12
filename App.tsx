@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Calendar as CalIcon, List, Plus, PhoneCall, TrendingUp, Users, ShieldCheck, Zap } from 'lucide-react';
+import { Calendar as CalIcon, List, Plus, PhoneCall, TrendingUp, Users, ShieldCheck, Zap, Home, Search, Library } from 'lucide-react';
 import CalendarView from './components/CalendarView';
 import BookingModal from './components/BookingModal';
 import { Booking, ViewMode } from './types';
@@ -14,15 +14,11 @@ const App: React.FC = () => {
   const [currentCalendarDate, setCurrentCalendarDate] = useState<Date>(new Date());
   const [activeAnalysisId, setActiveAnalysisId] = useState<string | null>(null);
 
-  // Load from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('bookings');
-    if (saved) {
-      setBookings(JSON.parse(saved));
-    }
+    if (saved) setBookings(JSON.parse(saved));
   }, []);
 
-  // Save to localStorage
   useEffect(() => {
     localStorage.setItem('bookings', JSON.stringify(bookings));
   }, [bookings]);
@@ -42,7 +38,6 @@ const App: React.FC = () => {
 
     setBookings(prev => [newBooking, ...prev]);
     
-    // Auto-analyze lead quality using Gemini
     if (newBooking.notes) {
       setActiveAnalysisId(newBooking.id);
       const analysis = await analyzeLead(newBooking);
@@ -57,17 +52,17 @@ const App: React.FC = () => {
 
   const getStatusColor = (status: Booking['status']) => {
     switch (status) {
-      case 'completed': return 'bg-emerald-100 text-emerald-700';
-      case 'cancelled': return 'bg-rose-100 text-rose-700';
-      default: return 'bg-amber-100 text-amber-700';
+      case 'completed': return 'text-[#1DB954]';
+      case 'cancelled': return 'text-red-500';
+      default: return 'text-amber-500';
     }
   };
 
   const getQualityBadge = (quality: Booking['leadQuality']) => {
     switch (quality) {
-      case 'Het': return 'bg-rose-600 text-white ring-rose-200';
-      case 'Varm': return 'bg-orange-500 text-white ring-orange-100';
-      default: return 'bg-slate-500 text-white ring-slate-100';
+      case 'Het': return 'bg-[#1DB954] text-black font-bold';
+      case 'Varm': return 'bg-white text-black font-bold';
+      default: return 'bg-[#282828] text-[#b3b3b3]';
     }
   };
 
@@ -78,112 +73,91 @@ const App: React.FC = () => {
   const nextCalls = sortedBookings.filter(b => b.status === 'pending');
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Sidebar - Desktop Only Navigation */}
-      <aside className="hidden md:flex w-64 bg-slate-900 text-white flex-col shrink-0 p-6">
-        <div className="flex items-center gap-3 mb-10">
-          <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <PhoneCall className="text-white" size={24} />
+    <div className="min-h-screen flex flex-col md:flex-row bg-black text-white selection:bg-[#1DB954]">
+      {/* Sidebar - Spotify Style */}
+      <aside className="hidden md:flex w-[240px] bg-black flex-col shrink-0 p-3 space-y-2">
+        <div className="bg-[#121212] rounded-lg p-5 space-y-5">
+          <div className="flex items-center gap-3">
+             <div className="w-8 h-8 bg-[#1DB954] rounded-full flex items-center justify-center">
+               <PhoneCall size={18} className="text-black" />
+             </div>
+             <h1 className="text-lg font-bold tracking-tight">BokaSmidigt</h1>
           </div>
-          <h1 className="text-xl font-bold tracking-tight">BokaSmidigt</h1>
+          <nav className="space-y-4">
+            <button onClick={() => setViewMode('calendar')} className={`flex items-center gap-4 w-full text-sm font-bold transition-colors ${viewMode === 'calendar' ? 'text-white' : 'text-[#b3b3b3] hover:text-white'}`}>
+              <Home size={24} /> Hem
+            </button>
+            <button className="flex items-center gap-4 w-full text-sm font-bold text-[#b3b3b3] hover:text-white transition-colors">
+              <Search size={24} /> Sök samtal
+            </button>
+          </nav>
         </div>
 
-        <nav className="space-y-2 flex-1">
-          <button
-            onClick={() => setViewMode('calendar')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${
-              viewMode === 'calendar' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            <CalIcon size={20} /> Kalender
-          </button>
-          <button
-            onClick={() => setViewMode('list')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${
-              viewMode === 'list' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            <List size={20} /> Alla Bokningar
-          </button>
-        </nav>
+        <div className="flex-1 bg-[#121212] rounded-lg p-5 flex flex-col">
+          <div className="flex items-center justify-between mb-6">
+            <button className="flex items-center gap-3 text-[#b3b3b3] hover:text-white transition-colors font-bold text-sm">
+              <Library size={24} /> Mitt Bibliotek
+            </button>
+            <button onClick={() => setIsModalOpen(true)} className="p-1 hover:bg-[#282828] rounded-full text-[#b3b3b3] hover:text-white transition-all">
+              <Plus size={24} />
+            </button>
+          </div>
+          
+          <div className="space-y-4 overflow-y-auto">
+             <div 
+               onClick={() => setViewMode('list')}
+               className={`p-2 rounded-md cursor-pointer flex items-center gap-3 hover:bg-[#1a1a1a] transition-colors ${viewMode === 'list' ? 'bg-[#282828]' : ''}`}
+             >
+               <div className="w-12 h-12 bg-gradient-to-br from-indigo-700 to-indigo-900 rounded-md flex items-center justify-center shadow-lg">
+                 <List size={20} />
+               </div>
+               <div>
+                 <p className="text-sm font-bold">Alla Bokningar</p>
+                 <p className="text-xs text-[#b3b3b3]">Spellista • {bookings.length} st</p>
+               </div>
+             </div>
+          </div>
 
-        <div className="mt-auto pt-6 border-t border-slate-800 space-y-4">
-          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
-            <p className="text-xs text-slate-400 mb-1">Handläggare aktiva</p>
-            <div className="flex -space-x-2">
-              <div title="Niclas" className="w-8 h-8 rounded-full bg-blue-500 border-2 border-slate-900 flex items-center justify-center text-xs font-bold">N</div>
-              <div title="Johan" className="w-8 h-8 rounded-full bg-emerald-500 border-2 border-slate-900 flex items-center justify-center text-xs font-bold">J</div>
+          <div className="mt-auto pt-6 border-t border-[#282828]">
+            <div className="bg-[#282828] p-4 rounded-lg">
+              <p className="text-[10px] font-bold text-[#b3b3b3] uppercase tracking-wider mb-2">Aktiva ringer</p>
+              <div className="flex items-center gap-3">
+                <div className="flex -space-x-2">
+                  <div className="w-8 h-8 rounded-full bg-[#1DB954] border-2 border-[#121212] flex items-center justify-center text-[10px] font-black text-black">N</div>
+                  <div className="w-8 h-8 rounded-full bg-[#1ed760] border-2 border-[#121212] flex items-center justify-center text-[10px] font-black text-black">J</div>
+                </div>
+                <span className="text-xs font-bold text-[#1DB954] flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 bg-[#1DB954] rounded-full animate-pulse" /> Live
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 p-4 md:p-10 max-w-[1600px] mx-auto w-full">
-        {/* Header Area */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <main className="flex-1 flex flex-col min-h-0 bg-gradient-to-b from-[#1b1b1b] to-[#121212] m-2 rounded-lg overflow-y-auto pb-24 md:pb-10">
+        <header className="p-6 md:p-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h2 className="text-3xl font-extrabold text-slate-900">Dashboard</h2>
-            <p className="text-slate-500">Välkommen tillbaka. Här är era kommande säljsamtal.</p>
+            <h2 className="text-5xl md:text-8xl font-black tracking-tighter mb-4">Dashboard</h2>
+            <div className="flex items-center gap-2 text-sm font-bold text-[#b3b3b3]">
+              <div className="w-6 h-6 bg-[#1DB954] rounded-full flex items-center justify-center text-black text-[10px]">BS</div>
+              <span>BokaSmidigt</span>
+              <span className="w-1 h-1 bg-[#b3b3b3] rounded-full" />
+              <span>{nextCalls.length} kommande samtal</span>
+            </div>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center justify-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
+            className="group flex items-center justify-center gap-2 bg-[#1DB954] text-black px-8 py-3 rounded-full font-black hover:scale-105 active:scale-95 transition-all shadow-xl"
           >
-            <Plus size={20} /> Ny Bokning
+            NY BOKNING
           </button>
         </header>
 
-        {/* Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
-              <Users size={24} />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-slate-500">Inplanerade Samtal</p>
-              <p className="text-2xl font-bold text-slate-900">{nextCalls.length}</p>
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center">
-              <Zap size={24} />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-slate-500">Heta Prospekt</p>
-              <p className="text-2xl font-bold text-slate-900">{bookings.filter(b => b.leadQuality === 'Het').length}</p>
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
-              <TrendingUp size={24} />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-slate-500">Genomförda Samtal</p>
-              <p className="text-2xl font-bold text-slate-900">{bookings.filter(b => b.status === 'completed').length}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* View Selection (Mobile Tabs) */}
-        <div className="flex md:hidden bg-slate-200 p-1 rounded-lg mb-6">
-          <button
-            onClick={() => setViewMode('calendar')}
-            className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${viewMode === 'calendar' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600'}`}
-          >
-            Kalender
-          </button>
-          <button
-            onClick={() => setViewMode('list')}
-            className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${viewMode === 'list' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600'}`}
-          >
-            Lista
-          </button>
-        </div>
-
-        {/* Dynamic Viewport */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
+        <div className="p-6 md:p-8 space-y-8">
+          {/* Calendar or List View */}
+          <section className="bg-black/20 rounded-xl overflow-hidden backdrop-blur-sm">
             {viewMode === 'calendar' ? (
               <CalendarView
                 currentDate={currentCalendarDate}
@@ -196,122 +170,108 @@ const App: React.FC = () => {
                 onNextMonth={() => setCurrentCalendarDate(new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 1))}
               />
             ) : (
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left">
-                    <thead>
-                      <tr className="bg-slate-50 border-b border-slate-100">
-                        <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Kund</th>
-                        <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Tid & Datum</th>
-                        <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Handläggare</th>
-                        <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Kvalitet</th>
-                        <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm text-[#b3b3b3]">
+                  <thead className="border-b border-[#282828]">
+                    <tr>
+                      <th className="px-6 py-4 font-normal">#</th>
+                      <th className="px-6 py-4 font-normal">KUND</th>
+                      <th className="px-6 py-4 font-normal">TID & DATUM</th>
+                      <th className="px-6 py-4 font-normal">HANDLÄGGARE</th>
+                      <th className="px-6 py-4 font-normal">KVALITET</th>
+                      <th className="px-6 py-4 font-normal text-right">STATUS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sortedBookings.map((booking, idx) => (
+                      <tr key={booking.id} className="group hover:bg-[#ffffff1a] transition-colors rounded-md">
+                        <td className="px-6 py-4 w-12">{idx + 1}</td>
+                        <td className="px-6 py-4">
+                          <div className="font-bold text-white group-hover:text-[#1DB954]">{booking.customerName}</div>
+                          <div className="text-xs">{booking.phone}</div>
+                        </td>
+                        <td className="px-6 py-4">{booking.date} • {booking.time}</td>
+                        <td className="px-6 py-4 font-bold text-white">{booking.representative}</td>
+                        <td className="px-6 py-4">
+                           {booking.leadQuality && (
+                             <span className={`px-2 py-0.5 rounded-sm text-[10px] ${getQualityBadge(booking.leadQuality)}`}>
+                               {booking.leadQuality.toUpperCase()}
+                             </span>
+                           )}
+                        </td>
+                        <td className={`px-6 py-4 text-right font-bold ${getStatusColor(booking.status)}`}>
+                          {booking.status.toUpperCase()}
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {sortedBookings.map(booking => (
-                        <tr key={booking.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="px-6 py-4">
-                            <div className="font-semibold text-slate-900">{booking.customerName}</div>
-                            <div className="text-xs text-slate-500">{booking.phone}</div>
-                          </td>
-                          <td className="px-6 py-4 text-sm text-slate-600">
-                            {booking.date} kl {booking.time}
-                          </td>
-                          <td className="px-6 py-4 text-sm font-medium">
-                            <span className={booking.representative === 'Niclas' ? 'text-blue-600' : 'text-emerald-600'}>
-                              {booking.representative}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            {booking.leadQuality ? (
-                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ring-2 ring-offset-1 ${getQualityBadge(booking.leadQuality)}`}>
-                                {booking.leadQuality}
-                              </span>
-                            ) : '-'}
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(booking.status)}`}>
-                              {booking.status === 'pending' ? 'Inplanerad' : booking.status === 'completed' ? 'Klar' : 'Avbokad'}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
-          </div>
+          </section>
 
-          {/* Sidebar: Next Up & AI Insights */}
-          <div className="space-y-6">
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-              <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <Zap size={20} className="text-amber-500" /> AI Insikter & Analys
-              </h3>
-              <div className="space-y-4">
+          {/* AI Insights - "Now Playing" cards */}
+          <section>
+             <h3 className="text-2xl font-black mb-6 flex items-center gap-2 italic">
+               <Zap size={24} className="text-[#1DB954]" /> AI TOP CHARTS
+             </h3>
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {nextCalls.slice(0, 3).map(call => (
-                  <div key={call.id} className="p-4 rounded-xl bg-slate-50 border border-slate-100 relative overflow-hidden">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="text-xs font-bold text-slate-400 uppercase">{call.customerName}</span>
-                      {call.leadQuality && (
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${getQualityBadge(call.leadQuality)}`}>
-                          {call.leadQuality}
-                        </span>
-                      )}
+                  <div key={call.id} className="bg-[#181818] p-5 rounded-lg hover:bg-[#282828] transition-all group cursor-default border border-transparent hover:border-[#333]">
+                    <div className="w-full aspect-square bg-[#333] mb-4 rounded-md flex items-center justify-center relative overflow-hidden group">
+                       {call.leadQuality === 'Het' ? (
+                         <Zap size={64} className="text-[#1DB954] opacity-50" />
+                       ) : (
+                         <Users size={64} className="text-[#555]" />
+                       )}
+                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                         <div className="w-12 h-12 bg-[#1DB954] rounded-full flex items-center justify-center shadow-2xl scale-90 group-hover:scale-100 transition-transform">
+                           <TrendingUp size={24} className="text-black" />
+                         </div>
+                       </div>
                     </div>
-                    {activeAnalysisId === call.id ? (
-                      <div className="flex items-center gap-2 text-sm text-indigo-600 animate-pulse">
-                        <Zap size={14} className="animate-spin" /> Analyserar prospekt...
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-center">
+                        <p className="font-bold text-lg truncate">{call.customerName}</p>
+                        {call.leadQuality && (
+                          <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-sm ${getQualityBadge(call.leadQuality)}`}>
+                            {call.leadQuality}
+                          </span>
+                        )}
                       </div>
-                    ) : call.aiSummary ? (
-                      <p className="text-xs text-slate-600 leading-relaxed italic">
-                        "{call.aiSummary}"
-                      </p>
-                    ) : (
-                      <p className="text-xs text-slate-400">Ingen analys tillgänglig ännu.</p>
-                    )}
+                      <p className="text-sm text-[#b3b3b3]">{call.representative} • {call.time}</p>
+                      <div className="pt-3 min-h-[60px]">
+                        {activeAnalysisId === call.id ? (
+                          <p className="text-xs text-[#1DB954] animate-pulse">Analyserar prospekt...</p>
+                        ) : call.aiSummary ? (
+                          <p className="text-xs text-[#b3b3b3] leading-relaxed line-clamp-3">"{call.aiSummary}"</p>
+                        ) : (
+                          <p className="text-xs text-[#555] italic">Väntar på analys</p>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 ))}
-                {nextCalls.length === 0 && (
-                  <div className="text-center py-6 text-slate-400 text-sm italic">
-                    Inga inplanerade samtal att analysera.
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="bg-indigo-900 p-6 rounded-2xl text-white shadow-xl shadow-indigo-100">
-              <ShieldCheck className="mb-4 text-indigo-300" size={32} />
-              <h3 className="text-lg font-bold mb-2">Effektiv Uppföljning</h3>
-              <p className="text-indigo-200 text-sm leading-relaxed mb-4">
-                Säkerställ att Niclas och Johan alltid har rätt kontext inför varje samtal genom att använda AI-sammanfattningen.
-              </p>
-              <div className="flex items-center gap-2 text-xs font-bold text-indigo-300 bg-white/10 p-2 rounded-lg">
-                <TrendingUp size={14} /> Ökar konverteringen med 25%
-              </div>
-            </div>
-          </div>
+             </div>
+          </section>
         </div>
       </main>
 
-      {/* Footer Mobile Nav */}
-      <footer className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-2 flex justify-around z-40">
-        <button onClick={() => setViewMode('calendar')} className={`flex flex-col items-center p-2 ${viewMode === 'calendar' ? 'text-indigo-600' : 'text-slate-400'}`}>
-          <CalIcon size={20} />
-          <span className="text-[10px] font-bold mt-1">Kalender</span>
+      {/* Footer Mobile Nav - Spotify Bar */}
+      <footer className="md:hidden fixed bottom-2 left-2 right-2 bg-black/90 backdrop-blur-md border border-[#282828] rounded-full p-2 flex justify-around items-center z-40 shadow-2xl">
+        <button onClick={() => setViewMode('calendar')} className={`flex flex-col items-center p-2 transition-colors ${viewMode === 'calendar' ? 'text-white' : 'text-[#b3b3b3]'}`}>
+          <Home size={24} />
+          <span className="text-[10px] font-bold mt-0.5">Hem</span>
         </button>
-        <button onClick={() => setIsModalOpen(true)} className="flex flex-col items-center p-2 text-indigo-600 -mt-6 bg-white rounded-full border border-slate-200 shadow-lg w-14 h-14 justify-center">
-          <Plus size={24} />
+        <button onClick={() => setIsModalOpen(true)} className="flex items-center justify-center bg-[#1DB954] text-black w-14 h-14 rounded-full shadow-lg active:scale-90 transition-transform">
+          <Plus size={32} />
         </button>
-        <button onClick={() => setViewMode('list')} className={`flex flex-col items-center p-2 ${viewMode === 'list' ? 'text-indigo-600' : 'text-slate-400'}`}>
-          <List size={20} />
-          <span className="text-[10px] font-bold mt-1">Bokningar</span>
+        <button onClick={() => setViewMode('list')} className={`flex flex-col items-center p-2 transition-colors ${viewMode === 'list' ? 'text-white' : 'text-[#b3b3b3]'}`}>
+          <Library size={24} />
+          <span className="text-[10px] font-bold mt-0.5">Bibliotek</span>
         </button>
       </footer>
 
-      {/* Modal */}
       <BookingModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

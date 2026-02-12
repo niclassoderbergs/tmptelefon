@@ -27,7 +27,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   const days = getDaysInMonth(currentDate);
-  const firstDay = (getFirstDayOfMonth(currentDate) + 6) % 7; // Adjust for Monday start
+  const firstDay = (getFirstDayOfMonth(currentDate) + 6) % 7;
   const monthName = currentDate.toLocaleString('sv-SE', { month: 'long', year: 'numeric' });
   const weekDays = ['Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön'];
 
@@ -41,22 +41,22 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-      <div className="p-6 flex items-center justify-between border-b border-slate-100">
-        <h2 className="text-xl font-bold text-slate-800 capitalize">{monthName}</h2>
-        <div className="flex gap-2">
-          <button onClick={onPrevMonth} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-500">
-            <ChevronLeft size={20} />
+    <div className="bg-[#121212] rounded-xl overflow-hidden shadow-2xl">
+      <div className="p-6 flex items-center justify-between border-b border-[#282828]">
+        <h2 className="text-xl font-black text-white capitalize">{monthName}</h2>
+        <div className="flex gap-4">
+          <button onClick={onPrevMonth} className="p-2 hover:bg-[#282828] rounded-full transition-colors text-[#b3b3b3] hover:text-white">
+            <ChevronLeft size={24} />
           </button>
-          <button onClick={onNextMonth} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-500">
-            <ChevronRight size={20} />
+          <button onClick={onNextMonth} className="p-2 hover:bg-[#282828] rounded-full transition-colors text-[#b3b3b3] hover:text-white">
+            <ChevronRight size={24} />
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 border-b border-slate-100">
+      <div className="grid grid-cols-7 border-b border-[#282828] bg-black/40">
         {weekDays.map(day => (
-          <div key={day} className="py-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">
+          <div key={day} className="py-4 text-center text-[10px] font-black text-[#b3b3b3] uppercase tracking-widest">
             {day}
           </div>
         ))}
@@ -64,7 +64,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
       <div className="grid grid-cols-7">
         {paddingArray.map(i => (
-          <div key={`padding-${i}`} className="h-24 sm:h-32 border-b border-r border-slate-50 bg-slate-50/30" />
+          <div key={`padding-${i}`} className="h-24 sm:h-32 border-b border-r border-[#1a1a1a] bg-black/20" />
         ))}
         {daysArray.map(day => {
           const dayBookings = getBookingsForDay(day);
@@ -74,29 +74,33 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             <div
               key={day}
               onClick={() => onDateClick(new Date(currentDate.getFullYear(), currentDate.getMonth(), day))}
-              className={`h-24 sm:h-32 border-b border-r border-slate-100 p-2 cursor-pointer hover:bg-indigo-50/30 transition-colors group relative`}
+              className={`h-24 sm:h-32 border-b border-r border-[#1a1a1a] p-2 cursor-pointer hover:bg-[#282828] transition-all group relative`}
             >
-              <span className={`inline-flex items-center justify-center w-7 h-7 text-sm font-semibold rounded-full transition-colors ${
-                isToday ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 group-hover:text-indigo-600'
-              }`}>
-                {day}
-              </span>
+              <div className="flex justify-between items-start">
+                <span className={`inline-flex items-center justify-center w-7 h-7 text-xs font-black rounded-full transition-all ${
+                  isToday ? 'bg-[#1DB954] text-black shadow-lg shadow-[#1DB954]/20' : 'text-[#b3b3b3] group-hover:text-white'
+                }`}>
+                  {day}
+                </span>
+                {dayBookings.length > 0 && !isToday && (
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#1DB954] mt-1" />
+                )}
+              </div>
 
-              <div className="mt-2 space-y-1 overflow-y-auto max-h-[calc(100%-2rem)]">
-                {dayBookings.slice(0, 3).map(booking => (
+              <div className="mt-2 space-y-1 overflow-hidden">
+                {dayBookings.slice(0, 2).map(booking => (
                   <div
                     key={booking.id}
-                    className={`text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1 font-medium truncate ${
-                      booking.representative === 'Niclas' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'
+                    className={`text-[9px] px-1.5 py-1 rounded-sm flex items-center gap-1 font-bold truncate ${
+                      booking.representative === 'Niclas' ? 'bg-[#2e2e2e] text-blue-400' : 'bg-[#2e2e2e] text-[#1DB954]'
                     }`}
                   >
-                    <span className="w-1 h-1 rounded-full bg-current shrink-0" />
-                    <span className="font-bold">{booking.time}</span> {booking.customerName}
+                    <span className="font-black opacity-70">{booking.time}</span> {booking.customerName}
                   </div>
                 ))}
-                {dayBookings.length > 3 && (
-                  <div className="text-[10px] text-slate-400 font-medium pl-1 italic">
-                    + {dayBookings.length - 3} till...
+                {dayBookings.length > 2 && (
+                  <div className="text-[9px] text-[#555] font-black pl-1">
+                    + {dayBookings.length - 2} TILL
                   </div>
                 )}
               </div>

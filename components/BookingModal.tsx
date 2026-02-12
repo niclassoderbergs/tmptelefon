@@ -29,78 +29,81 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onSave, in
     onClose();
   };
 
+  const inputClasses = "w-full p-3 bg-[#282828] border border-transparent rounded-md focus:border-[#535353] focus:bg-[#333] outline-none transition-all text-white text-sm placeholder:text-[#535353]";
+  const labelClasses = "text-xs font-black text-[#b3b3b3] uppercase tracking-widest flex items-center gap-2 mb-1";
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
-        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-indigo-600 text-white">
-          <h2 className="text-xl font-bold">Boka nytt samtal</h2>
-          <button onClick={onClose} className="p-1 hover:bg-white/20 rounded-full transition-colors">
-            <X size={24} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+      <div className="bg-[#181818] rounded-xl shadow-2xl w-full max-w-lg overflow-hidden border border-[#282828] animate-in zoom-in-95 duration-200">
+        <div className="p-6 border-b border-[#282828] flex justify-between items-center bg-[#181818]">
+          <h2 className="text-xl font-black text-white">BOKA SAMTAL</h2>
+          <button onClick={onClose} className="p-2 hover:bg-[#282828] rounded-full transition-colors text-[#b3b3b3] hover:text-white">
+            <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-8 space-y-6">
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-              <User size={16} /> Kundens namn
+            <label className={labelClasses}>
+              <User size={14} /> Kundens namn
             </label>
             <input
               required
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+              className={inputClasses}
               value={formData.customerName}
               onChange={e => setFormData(prev => ({ ...prev, customerName: e.target.value }))}
-              placeholder="Sven Svensson"
+              placeholder="Vem ringer vi?"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                <Phone size={16} /> Telefon
+              <label className={labelClasses}>
+                <Phone size={14} /> Telefon
               </label>
               <input
                 required
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                className={inputClasses}
                 value={formData.phone}
                 onChange={e => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                placeholder="070-123 45 67"
+                placeholder="070..."
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                <Mail size={16} /> E-post (Valfritt)
+              <label className={labelClasses}>
+                <Mail size={14} /> E-post
               </label>
               <input
                 type="email"
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                className={inputClasses}
                 value={formData.email}
                 onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="sven@företag.se"
+                placeholder="Valfritt"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                <CalIcon size={16} /> Datum
+              <label className={labelClasses}>
+                <CalIcon size={14} /> Datum
               </label>
               <input
                 type="date"
                 required
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                className={inputClasses}
                 value={formData.date}
                 onChange={e => setFormData(prev => ({ ...prev, date: e.target.value }))}
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                <Clock size={16} /> Tid
+              <label className={labelClasses}>
+                <Clock size={14} /> Tid
               </label>
               <input
                 type="time"
                 required
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                className={inputClasses}
                 value={formData.time}
                 onChange={e => setFormData(prev => ({ ...prev, time: e.target.value }))}
               />
@@ -108,8 +111,8 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onSave, in
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-              <Briefcase size={16} /> Vem ringer?
+            <label className={labelClasses}>
+              <Briefcase size={14} /> Handläggare
             </label>
             <div className="flex gap-4">
               {(['Niclas', 'Johan'] as Representative[]).map(rep => (
@@ -121,7 +124,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onSave, in
                     checked={formData.representative === rep}
                     onChange={() => setFormData(prev => ({ ...prev, representative: rep }))}
                   />
-                  <div className="p-3 text-center rounded-lg border border-slate-200 cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:bg-slate-100 transition-all">
+                  <div className="p-3 text-center rounded-md border border-[#282828] bg-black/20 text-xs font-black cursor-pointer peer-checked:bg-[#1DB954] peer-checked:text-black peer-checked:border-transparent hover:bg-[#282828] transition-all uppercase tracking-widest">
                     {rep}
                   </div>
                 </label>
@@ -130,30 +133,30 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onSave, in
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-              <MessageSquare size={16} /> Anteckningar / Bakgrund
+            <label className={labelClasses}>
+              <MessageSquare size={14} /> Anteckningar
             </label>
             <textarea
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none min-h-[100px] transition-all"
+              className={`${inputClasses} min-h-[100px] resize-none`}
               value={formData.notes}
               onChange={e => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-              placeholder="Vad vill kunden diskutera? Finns det några specifika behov?"
+              placeholder="Vad vill kunden diskutera?"
             />
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex items-center justify-end gap-6 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 px-4 rounded-lg font-semibold text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all"
+              className="text-sm font-black text-[#b3b3b3] hover:text-white transition-colors uppercase tracking-widest"
             >
               Avbryt
             </button>
             <button
               type="submit"
-              className="flex-1 py-3 px-4 rounded-lg font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all"
+              className="bg-[#1DB954] text-black px-10 py-4 rounded-full font-black hover:scale-105 active:scale-95 transition-all shadow-xl uppercase tracking-tighter"
             >
-              Boka Samtal
+              BOKA SAMTAL
             </button>
           </div>
         </form>
