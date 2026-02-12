@@ -42,7 +42,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onSave, in
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-              <User size={16} /> Kundens namn2
+              <User size={16} /> Kundens namn
             </label>
             <input
               required

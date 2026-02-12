@@ -10,6 +10,10 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
+    <script>
+      // Enkel shim för process.env för att undvika ReferenceError i webbläsaren
+      window.process = { env: { API_KEY: "" } };
+    </script>
 <script type="importmap">
 {
   "imports": {
@@ -24,5 +28,7 @@
 </head>
 <body class="bg-slate-50 text-slate-900">
     <div id="root"></div>
+    <!-- Denna rad saknades och är anledningen till den vita sidan -->
+    <script type="module" src="index.tsx"></script>
 </body>
 </html>
